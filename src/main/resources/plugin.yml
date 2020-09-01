@@ -1,0 +1,15 @@
+name: EnchantedSurvival
+version: ${project.version}
+main: me.mvabo.enchantedsurvival.EnchantedSurvival
+api-version: 1.13
+prefix: EnchantedSurvival
+load: STARTUP
+authors: [mVabo, EvilLootly]
+description: Enchants your survival experience
+
+commands:
+  es:
+    description: Main command for abilities and other stuff
+    usage: /es
+    permission: enchantedsurvival.use
+    permission-message: You dont have enchantedsurvival.use permission

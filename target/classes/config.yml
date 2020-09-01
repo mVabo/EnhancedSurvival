@@ -1,0 +1,17 @@
+#######################
+#  EnchantedSurvival  #
+#######################
+
+es-enabled: true
+
+#Sub-modules to enable
+thirst: true
+potionEnchants: true
+color: true
+abilities: true
+scoreboard: true
+longerDays: true
+
+#Choose which worlds the plugin should enable on
+worlds:
+  - 'world'

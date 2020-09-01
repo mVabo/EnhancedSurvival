@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="EnchantedSurvival v1.0.1-SNAPSHOT">
+    <output-path>$USER_HOME$/Desktop/spigotTest/plugins</output-path>
+    <root id="archive" name="EnchantedSurvival v1.0.1-SNAPSHOT.jar">
+      <element id="module-output" name="EnchantedSurvival" />
+    </root>
+  </artifact>
+</component>
