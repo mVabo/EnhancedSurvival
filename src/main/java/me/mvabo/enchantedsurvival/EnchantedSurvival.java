@@ -25,6 +25,7 @@ public final class EnchantedSurvival extends JavaPlugin {
     AbilityGUI aGui;
     Scoreboard board;
     CommandExecutor cmd;
+    Blood blood;
 
     @Override
     public void onEnable() {
@@ -40,6 +41,7 @@ public final class EnchantedSurvival extends JavaPlugin {
         aGui = new AbilityGUI(abilitiesClass);
         board = new Scoreboard(thirst, artifacts, abilitiesClass);
         cmd = new ES(stats, abilitiesClass, aGui, board);
+        blood = new Blood();
 
         //Check if es is enabled
         boolean enabled = getConfig().getBoolean("es-enabled");
@@ -58,6 +60,9 @@ public final class EnchantedSurvival extends JavaPlugin {
             Bukkit.getPluginManager().registerEvents(board, this);
             Bukkit.getPluginManager().registerEvents(artifacts, this);
             Bukkit.getPluginManager().registerEvents(potions, this);
+        }
+        if (getConfig().getBoolean("blood")) {
+            Bukkit.getPluginManager().registerEvents(blood, this);
         }
 
         //Abilites
