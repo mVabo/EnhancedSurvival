@@ -7,6 +7,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
@@ -40,6 +41,36 @@ public class Blood implements Listener {
 
             //Queue next effect
             queueBloodEffect((LivingEntity) victim);
+
+            //Queue remove blood
+            queueRemoveBlood(blood);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerFall(EntityDamageByBlockEvent e) {
+        Entity victim = e.getEntity();
+
+        if (victim instanceof Player) {
+            victim.getWorld().playSound(victim.getLocation(), Sound.BLOCK_LAVA_POP, 1, 2);
+            BoundingBox bb = victim.getBoundingBox();
+            double heightAdd = bb.getHeight() / 2.0;
+            double width = (bb.getWidthX() + bb.getWidthZ() / 2.0);
+            BlockData bd = getBlood((LivingEntity) victim);
+            victim.getWorld().spawnParticle(Particle.BLOCK_CRACK, victim.getLocation().add(0, heightAdd, 0), 25, width/3.0, heightAdd/2.0, width/3.0, 0.005, bd);
+
+            //Drop blood
+            ItemStack blood = new ItemStack(Material.REDSTONE, 1);
+            ItemMeta bloodMeta = blood.getItemMeta();
+            bloodMeta.setDisplayName("blood");
+            blood.setItemMeta(bloodMeta);
+            victim.getWorld().dropItem(victim.getLocation(), blood);
+
+            //Queue next effect
+            queueBloodEffect((LivingEntity) victim);
+
+            //Queue remove blood
+            queueRemoveBlood(blood);
         }
     }
 
@@ -72,8 +103,33 @@ public class Blood implements Listener {
         blood.setItemMeta(bloodMeta);
         e.getWorld().dropItem(e.getLocation(), blood);
 
+        //Add damage
+        if (e.getHealth() > 1.0) {
+            ((LivingEntity) e).damage(1.0);
+        }
+
         //Queue next effect
         lastQueueBloodEffect(e);
+
+        //Queue remove blood
+        queueRemoveBlood(blood);
+    }
+
+    public void queueRemoveBlood(ItemStack blood) {
+        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+            @Override
+            public void run() {
+                removeBlood(blood);
+            }
+        }, 60);
+    }
+
+    public void removeBlood(ItemStack blood) {
+        try {
+            blood.setAmount(0);
+        } catch (Exception e) {
+            //The reason for this would be falling in lava, being picked up and much more, so its not neccessary to print the stack-trace each time
+        }
     }
 
     public void lastBleedEffect(LivingEntity e) {
@@ -95,24 +151,37 @@ public class Blood implements Listener {
         bloodMeta.setDisplayName("blood");
         blood.setItemMeta(bloodMeta);
         e.getWorld().dropItem(e.getLocation(), blood);
+
+        //Add damage
+        if (e.getHealth() > 1.0) {
+            ((LivingEntity) e).damage(1.0);
+        }
+
+        //Queue remove blood
+        queueRemoveBlood(blood);
     }
 
     public void queueBloodEffect(LivingEntity e) {
-        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-            @Override
-            public void run() {
-                bleedEffect(e);
-            }
-        }, 20L);
+        if (!e.isDead()) {
+            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    bleedEffect(e);
+                }
+            }, 20L);
+        }
+
     }
 
     public void lastQueueBloodEffect(LivingEntity e) {
-        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-            @Override
-            public void run() {
-                lastBleedEffect(e);
-            }
-        }, 20L);
+        if (!e.isDead()) {
+            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    lastBleedEffect(e);
+                }
+            }, 20L);
+        }
     }
 
     public BlockData getBlood(LivingEntity le) {

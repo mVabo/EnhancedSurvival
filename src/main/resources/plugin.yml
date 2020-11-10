@@ -6,6 +6,8 @@ prefix: EnchantedSurvival
 load: STARTUP
 authors: [mVabo, EvilLootly]
 description: Enchants your survival experience
+depend:
+  - EnhancedCore
 
 commands:
   es:

@@ -5,13 +5,18 @@
 es-enabled: true
 
 #Sub-modules to enable
-thirst: true
 potionEnchants: true
 color: true
 abilities: true
+artifacts: true
 scoreboard: true
 longerDays: true
 blood: true
+ignite: true
+
+thirst:
+  enabled: true
+  salt-water: true
 
 #Choose which worlds the plugin should enable on
 worlds:

@@ -26,13 +26,14 @@ public final class EnchantedSurvival extends JavaPlugin {
     Scoreboard board;
     CommandExecutor cmd;
     Blood blood;
+    Ignite ignite;
 
     @Override
     public void onEnable() {
         //Default config + stats file
         getConfig().options().copyDefaults(true);
         saveDefaultConfig();
-        this.stats = new PlayerStats();
+        //this.stats = new PlayerStats();
 
         abilitiesClass = new Abilities(stats);
         thirst = new Thirst();
@@ -42,6 +43,7 @@ public final class EnchantedSurvival extends JavaPlugin {
         board = new Scoreboard(thirst, artifacts, abilitiesClass);
         cmd = new ES(stats, abilitiesClass, aGui, board);
         blood = new Blood();
+        ignite = new Ignite();
 
         //Check if es is enabled
         boolean enabled = getConfig().getBoolean("es-enabled");
@@ -54,15 +56,26 @@ public final class EnchantedSurvival extends JavaPlugin {
 
         //Register listeners
         if(enabled) {
-            Bukkit.getPluginManager().registerEvents(aGui, this);
-            Bukkit.getPluginManager().registerEvents(abilitiesClass, this);
-            Bukkit.getPluginManager().registerEvents(thirst, this);
+            if (getConfig().getBoolean("abilities")) {
+                Bukkit.getPluginManager().registerEvents(aGui, this);
+                Bukkit.getPluginManager().registerEvents(abilitiesClass, this);
+            }
+            if (getConfig().getBoolean("thirst")) {
+                Bukkit.getPluginManager().registerEvents(thirst, this);
+            }
             Bukkit.getPluginManager().registerEvents(board, this);
-            Bukkit.getPluginManager().registerEvents(artifacts, this);
-            Bukkit.getPluginManager().registerEvents(potions, this);
-        }
-        if (getConfig().getBoolean("blood")) {
-            Bukkit.getPluginManager().registerEvents(blood, this);
+            if (getConfig().getBoolean("artifacts")) {
+                Bukkit.getPluginManager().registerEvents(artifacts, this);
+            }
+            if (getConfig().getBoolean("potionEnchants")) {
+                Bukkit.getPluginManager().registerEvents(potions, this);
+            }
+            if (getConfig().getBoolean("ignite")) {
+                Bukkit.getPluginManager().registerEvents(ignite, this);
+            }
+            if (getConfig().getBoolean("blood")) {
+                Bukkit.getPluginManager().registerEvents(blood, this);
+            }
         }
 
         //Abilites
@@ -96,6 +109,12 @@ public final class EnchantedSurvival extends JavaPlugin {
                 }
             }
         }, 10L, /* 600 */3L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+            @Override
+            public void run() {
+                potions.addPotionEffectsArmor();
+            }
+        }, 0L, 20l);
     }
 
     @Override

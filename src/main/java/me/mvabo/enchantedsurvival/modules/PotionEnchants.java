@@ -155,6 +155,7 @@ public class PotionEnchants implements Listener {
                             addPotionEffectBetter(p, pt, 20*5, ampAmmount, false, false, false);
                         }
                     }
+                    p.addPotionEffect(new PotionEffect(pt, 1200, 1));
                 }
             }
         }
@@ -463,7 +464,7 @@ public class PotionEnchants implements Listener {
         Player p = (Player) e.getWhoClicked();
         if(worlds.contains(p.getWorld().getName()) && colorEnabled) {
             if(e.getClickedInventory()!=null && p.getLevel()>=25) {
-                if(e.getClickedInventory().getType()== InventoryType.ANVIL) {
+                if(e.getClickedInventory().getType() == InventoryType.ANVIL) {
                     if(e.getSlot() == 2) {
                         ItemStack one = e.getClickedInventory().getItem(0);
                         ItemStack two = e.getClickedInventory().getItem(1);

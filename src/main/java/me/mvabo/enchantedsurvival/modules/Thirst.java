@@ -3,10 +3,8 @@ package me.mvabo.enchantedsurvival.modules;
 import me.mvabo.enchantedsurvival.EnchantedSurvival;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -33,7 +31,8 @@ public class Thirst implements Listener {
     List<String> worlds = plugin.getConfig().getStringList("worlds");
 
     //Check if thirst is enabled
-    boolean thirstEnabled = plugin.getConfig().getBoolean("thirst");
+    boolean thirstEnabled = plugin.getConfig().getConfigurationSection("thirst").getBoolean("enabled");
+    boolean saltEnabled = plugin.getConfig().getConfigurationSection("thirst").getBoolean("salt-water");
 
     //Make random available
     Random rand = new Random();
@@ -107,8 +106,13 @@ public class Thirst implements Listener {
 
     }
 
-    public void playerJoin() {
-
+    public void playerDrankSaltWater(Player p) {
+        if(!thirst.containsKey(p.getName())) {
+            int value = thirst.get(p);
+            p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 360, 2));
+            value += 2;
+            sendThirstMessage(value, p, true);
+        }
     }
 
     @EventHandler
@@ -166,15 +170,20 @@ public class Thirst implements Listener {
     @EventHandler
     public void playerDrinkLake(PlayerInteractEvent e) {
         Player p = e.getPlayer();
+        Location l = p.getLocation();
         if(worlds.contains(p.getWorld().getName()) && thirstEnabled) {
-            if(p.isSneaking()) {
-                if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-                    if(e.getClickedBlock().getRelative(e.getBlockFace()).getType() == Material.WATER) {
-                        p.getWorld().playSound(p.getLocation(), Sound.ENTITY_GENERIC_DRINK, 1, (float) 1.3);
-                        int newThirstValue = thirst.get(p)+5;
-                        sendThirstMessage(newThirstValue, p, true);
+            if ((!p.getWorld().getBiome(l.getBlockX(), l.getBlockY(), l.getBlockZ()).equals(Biome.BEACH) && !p.getWorld().getBiome(l.getBlockX(), l.getBlockY(), l.getBlockZ()).equals(Biome.OCEAN) && !p.getWorld().getBiome(l.getBlockX(), l.getBlockY(), l.getBlockZ()).equals(Biome.DEEP_COLD_OCEAN) && !p.getWorld().getBiome(l.getBlockX(), l.getBlockY(), l.getBlockZ()).equals(Biome.DEEP_FROZEN_OCEAN) && !p.getWorld().getBiome(l.getBlockX(), l.getBlockY(), l.getBlockZ()).equals(Biome.DEEP_LUKEWARM_OCEAN) && !p.getWorld().getBiome(l.getBlockX(), l.getBlockY(), l.getBlockZ()).equals(Biome.DEEP_OCEAN) && !p.getWorld().getBiome(l.getBlockX(), l.getBlockY(), l.getBlockZ()).equals(Biome.DEEP_WARM_OCEAN) && !p.getWorld().getBiome(l.getBlockX(), l.getBlockY(), l.getBlockZ()).equals(Biome.COLD_OCEAN) && !p.getWorld().getBiome(l.getBlockX(), l.getBlockY(), l.getBlockZ()).equals(Biome.COLD_OCEAN) && !p.getWorld().getBiome(l.getBlockX(), l.getBlockY(), l.getBlockZ()).equals(Biome.LUKEWARM_OCEAN) && !p.getWorld().getBiome(l.getBlockX(), l.getBlockY(), l.getBlockZ()).equals(Biome.WARM_OCEAN)) || !saltEnabled) {
+                if (p.isSneaking()) {
+                    if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+                        if (e.getClickedBlock().getRelative(e.getBlockFace()).getType() == Material.WATER) {
+                            p.getWorld().playSound(p.getLocation(), Sound.ENTITY_GENERIC_DRINK, 1, (float) 1.3);
+                            int newThirstValue = thirst.get(p) + 5;
+                            sendThirstMessage(newThirstValue, p, true);
+                        }
                     }
                 }
+            } else {
+                playerDrankSaltWater(p);
             }
         }
     }

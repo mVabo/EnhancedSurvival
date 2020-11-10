@@ -99,6 +99,8 @@ public class AbilityGUI implements Listener {
                 }
             }
            //}
+        } else {
+            e.setCancelled(true);
         }
         if(i == null || i.getType().equals(Material.AIR)) {
             //e.setCancelled(true);
