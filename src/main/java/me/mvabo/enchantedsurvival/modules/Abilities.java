@@ -2,6 +2,7 @@ package me.mvabo.enchantedsurvival.modules;
 
 import me.mvabo.enchantedsurvival.EnchantedSurvival;
 import me.mvabo.enchantedsurvival.PlayerStats;
+import me.mvabo.enhancedcore.files.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -22,7 +23,7 @@ public class Abilities implements Listener {
 
     //Declare variables
 
-    PlayerStats stats;
+    PlayerData stats;
     Plugin plugin = EnchantedSurvival.getPlugin(EnchantedSurvival.class);
 
     boolean abilitiesEnabled = plugin.getConfig().getBoolean("abilitites");
@@ -30,7 +31,7 @@ public class Abilities implements Listener {
     public Map<String, Integer[]> abilities = new HashMap<String, Integer[]>();
     Integer[] data;
 
-    public Abilities(PlayerStats stats) {
+    public Abilities(PlayerData stats) {
         this.stats = stats;
     }
 
@@ -177,14 +178,14 @@ public class Abilities implements Listener {
 
     public void saveAbs() {
         for(Map.Entry<String, Integer[]> entry : abilities.entrySet()) {
-            this.stats.getPlayerStats().set("data." + entry.getKey(), entry.getValue());
+            this.stats.getPlayerData().set("data." + entry.getKey(), entry.getValue());
         }
-        this.stats.saveStatsConfig();
+        this.stats.saveDataConfig();
     }
 
     public void restoreAbs() {
-        stats.getPlayerStats().getConfigurationSection("data").getKeys(false).forEach(key ->{
-            Integer[] content = ((List<Integer>) stats.getPlayerStats().get("data." + key)).toArray(new Integer[0]);
+        stats.getPlayerData().getConfigurationSection("data").getKeys(false).forEach(key ->{
+            Integer[] content = ((List<Integer>) stats.getPlayerData().get("data." + key)).toArray(new Integer[0]);
             abilities.put(key, content);
         });
     }

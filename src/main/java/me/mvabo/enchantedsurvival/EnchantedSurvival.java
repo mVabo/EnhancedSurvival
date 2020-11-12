@@ -4,6 +4,9 @@ import me.mvabo.enchantedsurvival.commands.ES;
 import me.mvabo.enchantedsurvival.commands.ESTabCompleter;
 import me.mvabo.enchantedsurvival.modules.*;
 import me.mvabo.enchantedsurvival.modules.abilities.AbilityGUI;
+import me.mvabo.enhancedcore.EnhancedCore;
+import me.mvabo.enhancedcore.files.Config;
+import me.mvabo.enhancedcore.files.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandExecutor;
@@ -13,9 +16,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.IOException;
 import java.util.List;
 
+import static me.mvabo.enhancedcore.files.Config.*;
+
 public final class EnchantedSurvival extends JavaPlugin {
 
-    public PlayerStats stats;
+    public PlayerData data;
 
     //Establish all modules
     Abilities abilitiesClass;
@@ -27,28 +32,29 @@ public final class EnchantedSurvival extends JavaPlugin {
     CommandExecutor cmd;
     Blood blood;
     Ignite ignite;
+    Config c;
 
     @Override
     public void onEnable() {
         //Default config + stats file
-        getConfig().options().copyDefaults(true);
-        saveDefaultConfig();
-        //this.stats = new PlayerStats();
+        //getConfig().options().copyDefaults(true);
+        //saveDefaultConfig();
+        this.data = new PlayerData();
 
-        abilitiesClass = new Abilities(stats);
+        abilitiesClass = new Abilities(data);
         thirst = new Thirst();
         potions = new PotionEnchants();
         artifacts = new Artifacts();
         aGui = new AbilityGUI(abilitiesClass);
         board = new Scoreboard(thirst, artifacts, abilitiesClass);
-        cmd = new ES(stats, abilitiesClass, aGui, board);
+        cmd = new ES(data, abilitiesClass, aGui, board);
         blood = new Blood();
         ignite = new Ignite();
 
         //Check if es is enabled
-        boolean enabled = getConfig().getBoolean("es-enabled");
-        boolean longerDays = getConfig().getBoolean("longerDays");
-        List<String> worlds = getConfig().getStringList("worlds");
+        boolean enabled = true;
+        boolean longerDays = thirstEnabled;
+        List<String> worlds = survivalWorlds;
 
         if (worlds.isEmpty()) {
             worlds.add("world");
@@ -56,30 +62,30 @@ public final class EnchantedSurvival extends JavaPlugin {
 
         //Register listeners
         if(enabled) {
-            if (getConfig().getBoolean("abilities")) {
+            if (abilitiesEnabled) {
                 Bukkit.getPluginManager().registerEvents(aGui, this);
                 Bukkit.getPluginManager().registerEvents(abilitiesClass, this);
             }
-            if (getConfig().getBoolean("thirst")) {
+            if (thirstEnabled) {
                 Bukkit.getPluginManager().registerEvents(thirst, this);
             }
             Bukkit.getPluginManager().registerEvents(board, this);
-            if (getConfig().getBoolean("artifacts")) {
+            if (artifactsEnabled) {
                 Bukkit.getPluginManager().registerEvents(artifacts, this);
             }
-            if (getConfig().getBoolean("potionEnchants")) {
+            if (potionEnchantsEnabled) {
                 Bukkit.getPluginManager().registerEvents(potions, this);
             }
-            if (getConfig().getBoolean("ignite")) {
+            if (igniteEnabled) {
                 Bukkit.getPluginManager().registerEvents(ignite, this);
             }
-            if (getConfig().getBoolean("blood")) {
+            if (bloodEnabled) {
                 Bukkit.getPluginManager().registerEvents(blood, this);
             }
         }
 
         //Abilites
-        if(getConfig().getBoolean("abilities") && stats.getPlayerStats().contains("data")) {
+        if(abilitiesEnabled && data.getPlayerData().contains("data")) {
             abilitiesClass.restoreAbs();
         }
 
@@ -116,6 +122,8 @@ public final class EnchantedSurvival extends JavaPlugin {
             }
         }, 0L, 20l);
     }
+
+    public void getConfigs(Config config) { this.c = config; }
 
     @Override
     public void onDisable() {

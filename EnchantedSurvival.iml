@@ -28,5 +28,6 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.md-5:bungeecord-chat:1.15-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.yaml:snakeyaml:1.25" level="project" />
     <orderEntry type="library" name="spigot-1.16.2" level="project" />
+    <orderEntry type="library" name="EnhancedCore v0.0.5 DEV-BUILD" level="project" />
   </component>
 </module>

@@ -5,6 +5,7 @@ import me.mvabo.enchantedsurvival.PlayerStats;
 import me.mvabo.enchantedsurvival.modules.Abilities;
 import me.mvabo.enchantedsurvival.modules.Scoreboard;
 import me.mvabo.enchantedsurvival.modules.abilities.AbilityGUI;
+import me.mvabo.enhancedcore.files.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,14 +16,14 @@ import org.bukkit.plugin.Plugin;
 public class ES implements CommandExecutor {
 
     Plugin plugin = EnchantedSurvival.getPlugin(EnchantedSurvival.class);
-    PlayerStats stats;
+    PlayerData stats;
     Abilities abs;
     AbilityGUI gui;
     Scoreboard scoreboard;
 
     boolean abilitiesEnabled = plugin.getConfig().getBoolean("abilities");
 
-    public ES(PlayerStats ps, Abilities abs, AbilityGUI gui, Scoreboard scoreboard) {
+    public ES(PlayerData ps, Abilities abs, AbilityGUI gui, Scoreboard scoreboard) {
         this.stats = ps;
         this.abs = abs;
         this.gui = gui;
